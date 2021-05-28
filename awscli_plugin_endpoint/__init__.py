@@ -28,6 +28,7 @@ def set_endpoint_from_profile(parsed_args, **kwargs):
     endpoint_url = get_attr_from_profile(parsed_args, kwargs, ENDPOINT_URL)
     if endpoint_url is not None:
         parsed_args.endpoint_url = endpoint_url
+        warnings.filterwarnings('always', "endpoint_url = {}.format(parsed_args.endpoint_url)        
 
 def set_verify_from_profile(parsed_args, **kwargs):
     if not parsed_args.verify_ssl:   # Respect --no-verify-ssl if present
@@ -36,6 +37,7 @@ def set_verify_from_profile(parsed_args, **kwargs):
     verify_ssl = get_attr_from_profile(parsed_args, kwargs, VERIFY_SSL)
     if verify_ssl is not None:
         parsed_args.verify_ssl = str2bool(verify_ssl)
+        warnings.filterwarnings('always', "verify_ssl = {}.format(parsed_args.verify_ssl)
         if not parsed_args.verify_ssl:
             warnings.filterwarnings('ignore', 'Unverified HTTPS request')
 
@@ -46,7 +48,8 @@ def set_ca_bundle_from_profile(parsed_args, **kwargs):
     ca_bundle = get_attr_from_profile(parsed_args, kwargs, CA_BUNDLE)
     if ca_bundle is not None:
         parsed_args.ca_bundle = ca_bundle
-
+        warnings.filterwarnings('always', "ca_bundle = {}.format(parsed_args.ca_bundle)
+                                
 def awscli_initialize(cli):
     cli.register('top-level-args-parsed', set_endpoint_from_profile)
     cli.register('top-level-args-parsed', set_verify_from_profile)
