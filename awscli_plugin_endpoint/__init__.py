@@ -56,10 +56,11 @@ def set_ca_bundle_from_profile(parsed_args, session, **kwargs):
                                 
 def debug_plugin(parsed_args, session, **kwargs):
     session.set_stream_logger(__name__, logging.DEBUG, format_string=LOG_FORMAT)
-    logger.info("HERE")
+    LOG.info("HERE")
     warn.warn("HERE")
     
 def awscli_initialize(cli):
+    LOG.info("HERE at awscli_plugin_endpoint.awscli_initialize")
     cli.register('top-level-args-parsed', debug_plugin)
     cli.register('top-level-args-parsed', set_endpoint_from_profile)
     cli.register('top-level-args-parsed', set_verify_from_profile)
