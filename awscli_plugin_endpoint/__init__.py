@@ -7,7 +7,6 @@ CA_BUNDLE = 'ca_bundle'
 def str2bool(value):
     return str(value).lower() in ['1', 'yes', 'y', 'true', 'on']
 
-# XXX
 def get_attr_from_profile(parsed_args, kwargs, attr):
     session = kwargs['session']
     # Set profile to session so we can load profile from config
@@ -49,7 +48,6 @@ def set_verify_from_profile(parsed_args, **kwargs):
 
 def get_ca_bundle_from_profile(parsed_args, kwargs):
     return get_attr_from_profile(parsed_args, kwargs, CA_BUNDLE)
-#    return profile.get(command, {}).get(CA_BUNDLE)
 
 def set_ca_bundle_from_profile(parsed_args, **kwargs):
     if parsed_args.ca_bundle:   # Respect --ca-bundle if present
