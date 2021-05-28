@@ -7,8 +7,7 @@ CA_BUNDLE = 'ca_bundle'
 def str2bool(value):
     return str(value).lower() in ['1', 'yes', 'y', 'true', 'on']
 
-def get_attr_from_profile(parsed_args, kwargs, attr):
-    session = kwargs['session']
+def get_attr_from_profile(parsed_args, session, attr):
     # Set profile to session so we can load profile from config
     if parsed_args.profile:
         session.set_config_variable('profile', parsed_args.profile)    
@@ -21,31 +20,31 @@ def _get_attr_from_profile(profile, command, attr):
         return profile[attr]
     return None
 
-def set_endpoint_from_profile(parsed_args, **kwargs):
+def set_endpoint_from_profile(parsed_args, session, **kwargs):
     if parsed_args.endpoint_url:   # Respect --endpoint-url if present
         return
     
-    endpoint_url = get_attr_from_profile(parsed_args, kwargs, ENDPOINT_URL)
+    endpoint_url = get_attr_from_profile(parsed_args, session, ENDPOINT_URL)
     if endpoint_url is not None:
         parsed_args.endpoint_url = endpoint_url
         warnings.warn("endpoint_url = {}.format(parsed_args.endpoint_url)        
 
-def set_verify_from_profile(parsed_args, **kwargs):
+def set_verify_from_profile(parsed_args, session, **kwargs):
     if not parsed_args.verify_ssl:   # Respect --no-verify-ssl if present
         return
     
-    verify_ssl = get_attr_from_profile(parsed_args, kwargs, VERIFY_SSL)
+    verify_ssl = get_attr_from_profile(parsed_args, session, VERIFY_SSL)
     if verify_ssl is not None:
         parsed_args.verify_ssl = str2bool(verify_ssl)
         warnings.warn("verify_ssl = {}.format(parsed_args.verify_ssl)
         if not parsed_args.verify_ssl:
             warnings.filterwarnings('ignore', 'Unverified HTTPS request')
 
-def set_ca_bundle_from_profile(parsed_args, **kwargs):
+def set_ca_bundle_from_profile(parsed_args, session, **kwargs):
     if parsed_args.ca_bundle:   # Respect --ca-bundle if present
         return
 
-    ca_bundle = get_attr_from_profile(parsed_args, kwargs, CA_BUNDLE)
+    ca_bundle = get_attr_from_profile(parsed_args, session, CA_BUNDLE)
     if ca_bundle is not None:
         parsed_args.ca_bundle = ca_bundle
         warnings.warn("ca_bundle = {}.format(parsed_args.ca_bundle)
