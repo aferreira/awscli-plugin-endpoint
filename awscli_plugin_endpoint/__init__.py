@@ -35,7 +35,7 @@ def get_endpoint_from_profile(profile, command):
 #    return endpoint
 
 def set_endpoint_from_profile(parsed_args, **kwargs):
-    if parsed_args.endpoint_url:   # If endpoint set on CLI option, use CLI endpoint
+    if parsed_args.endpoint_url:   # Respect --endpoint-url if present
         return
     
     session = kwargs['session']
@@ -47,23 +47,26 @@ def set_endpoint_from_profile(parsed_args, **kwargs):
         parsed_args.endpoint_url = service_endpoint
 
 def set_verify_from_profile(parsed_args, **kwargs):
-    verify_ssl = parsed_args.verify_ssl
-    # By default verify_ssl is set to true
-    # if --no-verify-ssl is specified, parsed_args.verify_ssl is False
-    # so keep it
+    if not parsed_args.verify_ssl:   # Respect --no-verify-ssl if present
+        return
+    
+#    verify_ssl = parsed_args.verify_ssl
+#    # By default verify_ssl is set to true
+#    # if --no-verify-ssl is specified, parsed_args.verify_ssl is False
+#    # so keep it
     if verify_ssl:
-        session = kwargs['session']
-        # Set profile to session so we can load profile from config
-        if parsed_args.profile:
-            session.set_config_variable('profile', parsed_args.profile)
-        service_verify = get_verify_from_profile(session.get_scoped_config(), parsed_args.command)
-        if service_verify is not None:
-            parsed_args.verify_ssl = service_verify
-            if not service_verify:
-                warnings.filterwarnings('ignore', 'Unverified HTTPS request')
+    session = kwargs['session']
+    # Set profile to session so we can load profile from config
+    if parsed_args.profile:
+        session.set_config_variable('profile', parsed_args.profile)
+    service_verify = get_verify_from_profile(session.get_scoped_config(), parsed_args.command)
+    if service_verify is not None:
+        parsed_args.verify_ssl = service_verify
+        if not service_verify:
+            warnings.filterwarnings('ignore', 'Unverified HTTPS request')
 
 def set_ca_bundle_from_profile(parsed_args, **kwargs):
-    if parsed_args.ca_bundle is not None: # Respect command line arg if present
+    if parsed_args.ca_bundle:   # Respect --ca-bundle if present
         return
 
     session = kwargs['session']
