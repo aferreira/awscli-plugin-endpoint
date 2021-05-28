@@ -17,6 +17,8 @@ def get_attr_from_profile(parsed_args, kwargs, attr):
 def _get_attr_from_profile(profile, command, attr):
     if command in profile and attr in profile[command]:
         return profile[command][attr]
+    if attr in profile:   # XXX
+        return profile[attr]
     return None
 
 def set_endpoint_from_profile(parsed_args, **kwargs):
