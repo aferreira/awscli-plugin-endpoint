@@ -1,7 +1,7 @@
 import warnings
 import logging
 
-from awscli.clidriver import LOG_FORMAT
+from awscli.clidriver import LOG_FORMAT, LOG
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ def set_endpoint_from_profile(parsed_args, session, **kwargs):
     endpoint_url = get_attr_from_profile(parsed_args, session, ENDPOINT_URL)
     if endpoint_url is not None:
         parsed_args.endpoint_url = endpoint_url
-        logger.debug("endpoint_url = {}".format(parsed_args.endpoint_url))
+        LOG.debug("endpoint_url = {}".format(parsed_args.endpoint_url)) # DEBUG
 
 def set_verify_from_profile(parsed_args, session, **kwargs):
     if not parsed_args.verify_ssl:   # Respect --no-verify-ssl if present
