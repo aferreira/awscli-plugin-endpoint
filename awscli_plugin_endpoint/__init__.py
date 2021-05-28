@@ -54,6 +54,7 @@ def set_ca_bundle_from_profile(parsed_args, session, **kwargs):
                                 
 def debug_plugin(parsed_args, session, **kwargs):
     logger.info("HERE")
+    warn.warn("HERE")
     
 def awscli_initialize(cli):
     cli.register('top-level-args-parsed', debug_plugin)
