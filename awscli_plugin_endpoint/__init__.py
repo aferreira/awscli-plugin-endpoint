@@ -2,6 +2,7 @@ import warnings
 import logging
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG) # XXX
 
 ENDPOINT_URL = 'endpoint_url'
 VERIFY_SSL = 'verify_ssl'
