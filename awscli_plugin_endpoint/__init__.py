@@ -1,4 +1,7 @@
 import warnings
+import logging
+
+logger = logging.getLogger(__name__)
 
 ENDPOINT_URL = 'endpoint_url'
 VERIFY_SSL = 'verify_ssl'
@@ -27,7 +30,7 @@ def set_endpoint_from_profile(parsed_args, session, **kwargs):
     endpoint_url = get_attr_from_profile(parsed_args, session, ENDPOINT_URL)
     if endpoint_url is not None:
         parsed_args.endpoint_url = endpoint_url
-        warnings.warn("endpoint_url = {}".format(parsed_args.endpoint_url))
+        logger.debug("endpoint_url = {}".format(parsed_args.endpoint_url))
 
 def set_verify_from_profile(parsed_args, session, **kwargs):
     if not parsed_args.verify_ssl:   # Respect --no-verify-ssl if present
@@ -36,7 +39,7 @@ def set_verify_from_profile(parsed_args, session, **kwargs):
     verify_ssl = get_attr_from_profile(parsed_args, session, VERIFY_SSL)
     if verify_ssl is not None:
         parsed_args.verify_ssl = str2bool(verify_ssl)
-        warnings.warn("verify_ssl = {}".format(parsed_args.verify_ssl))
+        logger.debug("verify_ssl = {}".format(parsed_args.verify_ssl))
         if not parsed_args.verify_ssl:
             warnings.filterwarnings('ignore', 'Unverified HTTPS request')
 
@@ -47,7 +50,7 @@ def set_ca_bundle_from_profile(parsed_args, session, **kwargs):
     ca_bundle = get_attr_from_profile(parsed_args, session, CA_BUNDLE)
     if ca_bundle is not None:
         parsed_args.ca_bundle = ca_bundle
-        warnings.warn("ca_bundle = {}".format(parsed_args.ca_bundle))
+        logger.debug("ca_bundle = {}".format(parsed_args.ca_bundle))
                                 
 def awscli_initialize(cli):
     cli.register('top-level-args-parsed', set_endpoint_from_profile)
