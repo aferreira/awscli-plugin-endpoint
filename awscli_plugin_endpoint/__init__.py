@@ -52,7 +52,11 @@ def set_ca_bundle_from_profile(parsed_args, session, **kwargs):
         parsed_args.ca_bundle = ca_bundle
         logger.debug("ca_bundle = {}".format(parsed_args.ca_bundle))
                                 
+def debug_plugin(parsed_args, session, **kwargs):
+    logger.info("HERE")
+    
 def awscli_initialize(cli):
+    cli.register('top-level-args-parsed', debug_plugin)
     cli.register('top-level-args-parsed', set_endpoint_from_profile)
     cli.register('top-level-args-parsed', set_verify_from_profile)
     cli.register('top-level-args-parsed', set_ca_bundle_from_profile)
