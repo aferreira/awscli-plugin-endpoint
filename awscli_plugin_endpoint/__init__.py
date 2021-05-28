@@ -20,54 +20,44 @@ def _get_attr_from_profile(profile, command, attr):
         return profile[command][attr]
     return None
 
-def get_verify_from_profile(parsed_args, kwargs):
-    v = get_attr_from_profile(parsed_args, kwargs, VERIFY_SSL)
-    return str2bool(v)
-#    verify = True
-#    if command in profile:
-#        if VERIFY_SSL in profile[command]:
-#            verify = str2bool(profile[command][VERIFY_SSL])
-#    return verify
-
-def get_ca_bundle_from_profile(parsed_args, kwargs):
-    return get_attr_from_profile(parsed_args, kwargs, CA_BUNDLE)
-#    return profile.get(command, {}).get(CA_BUNDLE)
-
 def get_endpoint_from_profile(parsed_args, kwargs):
     return get_attr_from_profile(parsed_args, kwargs, ENDPOINT_URL)
-#    endpoint = None
-#    if command in profile:
-#        if ENDPOINT_URL in profile[command]:
-#            endpoint = profile[command][ENDPOINT_URL]
-#    return endpoint
 
 def set_endpoint_from_profile(parsed_args, **kwargs):
     if parsed_args.endpoint_url:   # Respect --endpoint-url if present
         return
     
-    service_endpoint = get_endpoint_from_profile(parsed_args, kwargs)
-    if service_endpoint is not None:
-        parsed_args.endpoint_url = service_endpoint
+    endpoint_url = get_endpoint_from_profile(parsed_args, kwargs)
+    if endpoint_url is not None:
+        parsed_args.endpoint_url = endpoint_url
+
+def get_verify_from_profile(parsed_args, kwargs):
+    v = get_attr_from_profile(parsed_args, kwargs, VERIFY_SSL)
+    if v is None:
+        return v
+    return str2bool(v)
 
 def set_verify_from_profile(parsed_args, **kwargs):
     if not parsed_args.verify_ssl:   # Respect --no-verify-ssl if present
         return
     
-#    verify_ssl = parsed_args.verify_ssl
-#    # By default verify_ssl is set to true
-#    # if --no-verify-ssl is specified, parsed_args.verify_ssl is False
-#    # so keep it
-    service_verify = get_verify_from_profile(parsed_args, kwargs)
-    if service_verify is not None:
-        parsed_args.verify_ssl = service_verify
-        if not service_verify:
+    verify_ssl = get_verify_from_profile(parsed_args, kwargs)
+    if verify_ssl is not None:
+        parsed_args.verify_ssl = verify_ssl
+        if not verify_ssl:
             warnings.filterwarnings('ignore', 'Unverified HTTPS request')
+
+def get_ca_bundle_from_profile(parsed_args, kwargs):
+    return get_attr_from_profile(parsed_args, kwargs, CA_BUNDLE)
+#    return profile.get(command, {}).get(CA_BUNDLE)
 
 def set_ca_bundle_from_profile(parsed_args, **kwargs):
     if parsed_args.ca_bundle:   # Respect --ca-bundle if present
         return
 
-    parsed_args.ca_bundle = get_ca_bundle_from_profile(parsed_args, kwargs)
+    ca_bundle = get_ca_bundle_from_profile(parsed_args, kwargs)
+    if ca_bundle is not None:
+        parsed_args.ca_bundle = ca_bundle
 
 def awscli_initialize(cli):
     cli.register('top-level-args-parsed', set_endpoint_from_profile)
