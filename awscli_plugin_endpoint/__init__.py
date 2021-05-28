@@ -1,23 +1,21 @@
 import warnings
 
-ENDPOINT_URL = 'endpoint_url' # --endpoint-url=s
-VERIFY_SSL = 'verify_ssl'     # False if --no-verify-ssl
-CA_BUNDLE = 'ca_bundle'       # --ca-bundle=s
+ENDPOINT_URL = 'endpoint_url'
+VERIFY_SSL = 'verify_ssl'
+CA_BUNDLE = 'ca_bundle'
 
 def str2bool(value):
     return str(value).lower() in ['1', 'yes', 'y', 'true', 'on']
 
 # XXX
 def get_attr_from_profile(profile, command, attr):
-    if command in profile:
-        return profile[command].get(attr)
+    if command in profile and attr in profile[command]:
+        return profile[command][attr]
     return None
 
 def get_verify_from_profile(profile, command):
     v = get_attr_from_profile(profile, command, VERIFY_SSL)
-    if v is None:
-        return v
-    return str2bool(v)
+    return v if v is None else str2bool(v)
 #    verify = True
 #    if command in profile:
 #        if VERIFY_SSL in profile[command]:
@@ -37,16 +35,16 @@ def get_endpoint_from_profile(profile, command):
 #    return endpoint
 
 def set_endpoint_from_profile(parsed_args, **kwargs):
-    endpoint_url = parsed_args.endpoint_url
-    # If endpoint set on CLI option, use CLI endpoint
-    if endpoint_url is None:
-        session = kwargs['session']
-        # Set profile to session so we can load profile from config
-        if parsed_args.profile:
-            session.set_config_variable('profile', parsed_args.profile)
-        service_endpoint = get_endpoint_from_profile(session.get_scoped_config(), parsed_args.command)
-        if service_endpoint is not None:
-            parsed_args.endpoint_url = service_endpoint
+    if parsed_args.endpoint_url:   # If endpoint set on CLI option, use CLI endpoint
+        return
+    
+    session = kwargs['session']
+    # Set profile to session so we can load profile from config
+    if parsed_args.profile:
+        session.set_config_variable('profile', parsed_args.profile)
+    service_endpoint = get_endpoint_from_profile(session.get_scoped_config(), parsed_args.command)
+    if service_endpoint is not None:
+        parsed_args.endpoint_url = service_endpoint
 
 def set_verify_from_profile(parsed_args, **kwargs):
     verify_ssl = parsed_args.verify_ssl
