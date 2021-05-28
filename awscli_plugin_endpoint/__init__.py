@@ -1,28 +1,40 @@
 import warnings
 
-ENDPOINT_URL = 'endpoint_url'
-VERIFY_SSL = 'verify_ssl'
-CA_BUNDLE = 'ca_bundle'
+ENDPOINT_URL = 'endpoint_url' # --endpoint-url=s
+VERIFY_SSL = 'verify_ssl'     # False if --no-verify-ssl
+CA_BUNDLE = 'ca_bundle'       # --ca-bundle=s
 
 def str2bool(value):
     return str(value).lower() in ['1', 'yes', 'y', 'true', 'on']
 
-def get_verify_from_profile(profile, command):
-    verify = True
+# XXX
+def get_attr_from_profile(profile, command, attr):
     if command in profile:
-        if VERIFY_SSL in profile[command]:
-            verify = str2bool(profile[command][VERIFY_SSL])
-    return verify
+        return profile[command].get(attr)
+    return None
+
+def get_verify_from_profile(profile, command):
+    v = get_attr_from_profile(profile, command, VERIFY_SSL)
+    if v is None:
+        return v
+    return str2bool(v)
+#    verify = True
+#    if command in profile:
+#        if VERIFY_SSL in profile[command]:
+#            verify = str2bool(profile[command][VERIFY_SSL])
+#    return verify
 
 def get_ca_bundle_from_profile(profile, command):
-    return profile.get(command, {}).get(CA_BUNDLE)
+    return get_attr_from_profile(profile, command, CA_BUNDLE)
+#    return profile.get(command, {}).get(CA_BUNDLE)
 
 def get_endpoint_from_profile(profile, command):
-    endpoint = None
-    if command in profile:
-        if ENDPOINT_URL in profile[command]:
-            endpoint = profile[command][ENDPOINT_URL]
-    return endpoint
+    return get_attr_from_profile(profile, command, ENDPOINT_URL)
+#    endpoint = None
+#    if command in profile:
+#        if ENDPOINT_URL in profile[command]:
+#            endpoint = profile[command][ENDPOINT_URL]
+#    return endpoint
 
 def set_endpoint_from_profile(parsed_args, **kwargs):
     endpoint_url = parsed_args.endpoint_url
@@ -56,7 +68,7 @@ def set_verify_from_profile(parsed_args, **kwargs):
 
 def set_ca_bundle_from_profile(parsed_args, **kwargs):
     # Respect command line arg if present
-    if parsed_args.ca_bundle:
+    if parsed_args.ca_bundle is not None:
         return
 
     command = parsed_args.command
