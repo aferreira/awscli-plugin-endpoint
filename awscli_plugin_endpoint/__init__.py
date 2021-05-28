@@ -4,7 +4,6 @@ import logging
 from awscli.clidriver import LOG_FORMAT
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG) # XXX
 
 ENDPOINT_URL = 'endpoint_url'
 VERIFY_SSL = 'verify_ssl'
@@ -56,7 +55,7 @@ def set_ca_bundle_from_profile(parsed_args, session, **kwargs):
         logger.debug("ca_bundle = {}".format(parsed_args.ca_bundle))
                                 
 def debug_plugin(parsed_args, session, **kwargs):
-    session.set_stream_logger('botocore', logging.DEBUG, format_string=LOG_FORMAT)
+    session.set_stream_logger(__name__, logging.DEBUG, format_string=LOG_FORMAT)
     logger.info("HERE")
     warn.warn("HERE")
     
