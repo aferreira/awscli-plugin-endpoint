@@ -8,26 +8,33 @@ def str2bool(value):
     return str(value).lower() in ['1', 'yes', 'y', 'true', 'on']
 
 # XXX
-def get_attr_from_profile(profile, command, attr):
+def get_attr_from_profile(parsed_args, kwargs, attr):
+    session = kwargs['session']
+    # Set profile to session so we can load profile from config
+    if parsed_args.profile:
+        session.set_config_variable('profile', parsed_args.profile)    
+    return _get_attr_from_profile(session.get_scoped_config(), parsed_args.command, attr)
+
+def _get_attr_from_profile(profile, command, attr):
     if command in profile and attr in profile[command]:
         return profile[command][attr]
     return None
 
-def get_verify_from_profile(profile, command):
-    v = get_attr_from_profile(profile, command, VERIFY_SSL)
-    return v if v is None else str2bool(v)
+def get_verify_from_profile(parsed_args, kwargs):
+    v = get_attr_from_profile(parsed_args, kwargs, VERIFY_SSL)
+    return str2bool(v)
 #    verify = True
 #    if command in profile:
 #        if VERIFY_SSL in profile[command]:
 #            verify = str2bool(profile[command][VERIFY_SSL])
 #    return verify
 
-def get_ca_bundle_from_profile(profile, command):
-    return get_attr_from_profile(profile, command, CA_BUNDLE)
+def get_ca_bundle_from_profile(parsed_args, kwargs):
+    return get_attr_from_profile(parsed_args, kwargs, CA_BUNDLE)
 #    return profile.get(command, {}).get(CA_BUNDLE)
 
-def get_endpoint_from_profile(profile, command):
-    return get_attr_from_profile(profile, command, ENDPOINT_URL)
+def get_endpoint_from_profile(parsed_args, kwargs):
+    return get_attr_from_profile(parsed_args, kwargs, ENDPOINT_URL)
 #    endpoint = None
 #    if command in profile:
 #        if ENDPOINT_URL in profile[command]:
@@ -38,11 +45,7 @@ def set_endpoint_from_profile(parsed_args, **kwargs):
     if parsed_args.endpoint_url:   # Respect --endpoint-url if present
         return
     
-    session = kwargs['session']
-    # Set profile to session so we can load profile from config
-    if parsed_args.profile:
-        session.set_config_variable('profile', parsed_args.profile)
-    service_endpoint = get_endpoint_from_profile(session.get_scoped_config(), parsed_args.command)
+    service_endpoint = get_endpoint_from_profile(parsed_args, kwargs)
     if service_endpoint is not None:
         parsed_args.endpoint_url = service_endpoint
 
@@ -54,12 +57,7 @@ def set_verify_from_profile(parsed_args, **kwargs):
 #    # By default verify_ssl is set to true
 #    # if --no-verify-ssl is specified, parsed_args.verify_ssl is False
 #    # so keep it
-    if verify_ssl:
-    session = kwargs['session']
-    # Set profile to session so we can load profile from config
-    if parsed_args.profile:
-        session.set_config_variable('profile', parsed_args.profile)
-    service_verify = get_verify_from_profile(session.get_scoped_config(), parsed_args.command)
+    service_verify = get_verify_from_profile(parsed_args, kwargs)
     if service_verify is not None:
         parsed_args.verify_ssl = service_verify
         if not service_verify:
@@ -69,11 +67,7 @@ def set_ca_bundle_from_profile(parsed_args, **kwargs):
     if parsed_args.ca_bundle:   # Respect --ca-bundle if present
         return
 
-    session = kwargs['session']
-    # Set profile to session so we can load profile from config
-    if parsed_args.profile:
-        session.set_config_variable('profile', parsed_args.profile)
-    parsed_args.ca_bundle = get_ca_bundle_from_profile(session.get_scoped_config(), parsed_args.command)
+    parsed_args.ca_bundle = get_ca_bundle_from_profile(parsed_args, kwargs)
 
 def awscli_initialize(cli):
     cli.register('top-level-args-parsed', set_endpoint_from_profile)
