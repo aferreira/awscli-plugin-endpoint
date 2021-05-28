@@ -1,6 +1,8 @@
 import warnings
 import logging
 
+from awscli.clidriver import LOG_FORMAT
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG) # XXX
 
@@ -54,6 +56,7 @@ def set_ca_bundle_from_profile(parsed_args, session, **kwargs):
         logger.debug("ca_bundle = {}".format(parsed_args.ca_bundle))
                                 
 def debug_plugin(parsed_args, session, **kwargs):
+    session.set_stream_logger('botocore', logging.DEBUG, format_string=LOG_FORMAT)
     logger.info("HERE")
     warn.warn("HERE")
     
